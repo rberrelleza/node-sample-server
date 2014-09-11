@@ -1,13 +1,15 @@
+var buffer = require("buffer");
 var fs = require("fs");
 var sqlite3 = require('sqlite3').verbose();
+
 var db = null;
 var dbName = "data.db";
 var id=1;
 
 function initializeDB(file){
 	var db = new sqlite3.Database(file);
-	if(!file.exists){
-		console.log("Creating database file");
+	if(!fs.existsSync(file)){
+		console.log("creating database file");
 		fs.openSync(file, "w");
 		db.run("CREATE TABLE storage (id INTEGER PRIMARY KEY, value TEXT)", function(createResult){
 			if(createResult) throw createResult;
@@ -16,7 +18,7 @@ function initializeDB(file){
 			if(insertResult) throw insertResult;
 		})});
 		
-		console.log("Database initialized");
+		console.log("database initialized");
 	}
 
 	return db;
@@ -30,13 +32,13 @@ function get(callback){
 
 			if(err){
 				error = err;
-				console.log("There was an error when queryig for data: " + err);
+				console.log("there was an error when querying for data: " + err);
 			}else if(rows.length == 0){
-				console.log("Didn't receive any rows");
-				error = "Didn't receive any rows"
+				console.log("didn't receive any rows");
+				error = "didn't receive any rows"
 			}else
 			{
-				value =rows[0].value;
+				value = new Buffer(rows[0].value, "hex").toString();
 			}
 
 			callback(value, error);
@@ -44,14 +46,15 @@ function get(callback){
 }
 
 function put(value, callback){
+	hexValue = new Buffer(value).toString("hex");
 	db.run("UPDATE storage SET value=$value WHERE id=$id",
-	{ $id: id, $value:value }, 
+	{ $id: id, $value:hexValue }, 
 	function(error){
 		if(!error){
-			console.log("Inserted the data succesfully into the database");
+			console.log("inserted the data succesfully into the database");
 			callback(null);
 		}else{
-			console.log("Error when inserting into the DB: " + result);
+			console.log("error when inserting into the DB: " + result);
 			callback(error);
 		}
 	});

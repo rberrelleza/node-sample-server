@@ -1,5 +1,14 @@
 var http = require("http");
 
+function finalize(response, status, headers, body){
+	response.writeHead(status, headers);
+	if(body){
+		response.write(body);
+	}
+
+	response.end();
+}
+
 function start(application){
 	console.log("starting...");
 	function onRequest(request, response){
@@ -8,13 +17,10 @@ function start(application){
 				console.log("serving a GET request");
 				application.get(function(value, error){
 					if(error){
-						response.writeHead("500", {"content-type":"text/plain"});
+						finalize(response, "500", {"content-type":"text/plain"});
 					}else{
-						response.writeHead("200", {"content-type":"text/plain"});
-						response.write(value);
+						finalize(response, "200", {"content-type":"text/plain"}, value);
 					}
-					
-					response.end();
 				});
 				break;
 			case "PUT":
@@ -27,15 +33,13 @@ function start(application){
 				request.on('end', function()
 				{
 					if(!body) {
-						response.writeHead("400", {"content-type":"text/plain"});
-						response.write("Body is missing");
-						response.end();
+						finalize(response, "400", {"content-type":"text/plain"}, "Body is missing");
 					}
 					application.put(body, function(error){
 						if(error){
-							response.writeHead("500", {"content-type":"text/plain"});
+							finalize(response, "500", {"content-type":"text/plain"});
 						}else{
-							response.writeHead("204", {"content-type":"text/plain"});
+							finalize(response, "204", {"content-type":"text/plain"});
 						}
 
 						response.end();
@@ -44,8 +48,7 @@ function start(application){
 				
 				break;
 			default:
-				response.writeHead("405", {"content-type":"text/plain"});
-				response.end();
+				finalize(response, "405", {"content-type":"text/plain"});
 				break;
 		}		
 	}

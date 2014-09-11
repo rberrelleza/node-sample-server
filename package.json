@@ -1,0 +1,19 @@
+{
+    "name": "sample-webserver",
+    "description": "Sample webserver using nodejs and sqlite3",
+    "version": "0.0.1",
+    "homepage": "https://github.com/rberrelleza/node-sample-server",
+    "author": {
+        "name": "Ramiro Berrelleza",
+        "url": "https://github.com/rberrelleza"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/rberrelleza/node-sample-server.git"
+    },
+    "dependencies": {
+        "sqlite3": "2.2.7"
+    },
+    
+    "main": "index.js"
+}
