@@ -12,7 +12,8 @@
         "url": "git://github.com/rberrelleza/node-sample-server.git"
     },
     "dependencies": {
-        "sqlite3": "2.2.7"
+        "sqlite3": "2.2.7",
+        "sjcl":"1.0.1"
     },
     
     "main": "index.js"
